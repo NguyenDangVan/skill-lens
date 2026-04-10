@@ -9,7 +9,7 @@
     {
       "name": "skill-lens",
       "description": "Analytics dashboard for skill usage, health metrics, and A/B test results in terminal or web UI.",
-      "source": ".",
+      "source": "./",
       "category": "productivity"
     }
   ]
