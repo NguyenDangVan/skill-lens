@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "skill-lens-marketplace",
+  "description": "Skill Lens analytics plugin for Claude Code",
+  "owner": {
+    "name": "vannd1"
+  },
+  "plugins": [
+    {
+      "name": "skill-lens",
+      "description": "Analytics dashboard for skill usage, health metrics, and A/B test results in terminal or web UI.",
+      "source": ".",
+      "category": "productivity"
+    }
+  ]
+}
