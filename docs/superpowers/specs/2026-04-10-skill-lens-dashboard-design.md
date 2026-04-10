@@ -1,35 +1,35 @@
-# Skill Evolver Dashboard — Design Spec
+# Skill Lens — Design Spec
 
 ## Overview
 
-A local-only web dashboard that provides visual analytics for the [skill-evolver](https://github.com/haidang1810/skill-evolver) Claude Code plugin. It reads directly from skill-evolver's SQLite database and presents usage, health, and A/B testing data through interactive charts.
-
-**This is a standalone companion project**, not a plugin itself. It lives in its own repo and connects to skill-evolver's existing database file.
+A Claude Code plugin that provides visual analytics for skill usage. It reads a SQLite database in read-only mode and presents usage, health, and A/B testing data through slash commands and interactive charts.
 
 ## Architecture
 
 ```
-skill-evolver (existing plugin)
-  └── data/skill-evolver.db  ← SQLite file
-
-skill-evolver-dashboard (this project)
-  ├── server.mjs              ← Node.js HTTP server, reads .db via better-sqlite3
-  ├── public/                 ← Static frontend (Vanilla JS + Chart.js)
+skill-lens (plugin)
+  ├── .claude-plugin/plugin.json
+  ├── skills/                     ← Slash commands
+  ├── scripts/query-db.mjs       ← CLI query runner
+  ├── data/skill-lens.db          ← SQLite file
+  ├── server.mjs                  ← Node.js HTTP server for web dashboard
+  ├── public/                     ← Static frontend (Vanilla JS + Chart.js)
   │   ├── index.html
   │   ├── app.js
   │   └── style.css
   └── package.json
 ```
 
-**Data flow:** Browser → REST API (Node.js) → SQLite (read-only) → JSON → Chart.js renders
+**Data flow:** Slash command → query-db.mjs → SQLite (read-only) → JSON → formatted markdown
+**Web dashboard:** Browser → REST API (Node.js) → SQLite (read-only) → JSON → Chart.js renders
 
-**Key constraint:** The server opens skill-evolver's database in **read-only mode**. It never writes to it.
+**Key constraint:** The database is opened in **read-only mode**. It never writes to it.
 
 ## Tech Stack
 
 | Layer | Choice | Why |
 |-------|--------|-----|
-| Backend | Node.js + better-sqlite3 | Same dep as skill-evolver, zero new deps for DB |
+| Backend | Node.js + better-sqlite3 | Lightweight, fast SQLite access |
 | HTTP | Node built-in `http` module | No Express needed for ~6 endpoints |
 | Frontend | Vanilla JS + HTML + CSS | No build step, fast, simple |
 | Charts | Chart.js 4.x (CDN) | Lightweight, good defaults, responsive |
@@ -64,10 +64,10 @@ skill-evolver-dashboard (this project)
   - Stacked: satisfied / correction / follow_up / retry / cancel
 - **Heatmap table — Health status matrix**
   - Rows: skills. Columns: satisfaction, token creep, cancel rate, correction rate
-  - Cells: green/yellow/red based on thresholds (same as skill-evolver's health.mjs)
+  - Cells: green/yellow/red based on thresholds
 - **Trend arrows** for each metric vs previous 14-day period
 
-**Thresholds (matching skill-evolver):**
+**Thresholds:**
 - Satisfaction drop > 15% → yellow
 - Token creep > 30% → yellow
 - Cancel rate > 10% → red
@@ -116,12 +116,9 @@ GET /api/skills
 ## Database Connection
 
 ```javascript
-// server.mjs
-import Database from 'better-sqlite3';
-
 // Default path, configurable via DB_PATH env var
 const DB_PATH = process.env.DB_PATH
-  || path.join(os.homedir(), '.claude/plugins/skill-evolver/data/skill-evolver.db');
+  || path.join(os.homedir(), '.claude/plugins/skill-lens/data/skill-lens.db');
 
 const db = new Database(DB_PATH, { readonly: true });
 ```
@@ -178,8 +175,7 @@ public/
 ## Project Setup
 
 ```bash
-cd /home/vannd1/workspaces/u30/skill-evolver-dashboard
-npm init -y
+cd /home/vannd1/workspaces/u30/skill-lens
 npm install better-sqlite3
 # Chart.js loaded via CDN in HTML, no npm install needed
 ```
@@ -203,9 +199,8 @@ npm install better-sqlite3
 
 ## Out of Scope
 
-- Writing to skill-evolver database
+- Writing to the database
 - User authentication
 - Remote deployment / hosting
 - Run history explorer (deferred to future iteration)
 - Real-time WebSocket updates (polling on page load is sufficient)
-- Export functionality (skill-evolver already has `/skill-export`)

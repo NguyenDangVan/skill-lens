@@ -1,0 +1,16 @@
+{
+  "name": "skill-lens",
+  "version": "1.0.0",
+  "description": "Visual analytics dashboard for Claude Code skill usage",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^12.8.0"
+  }
+}
