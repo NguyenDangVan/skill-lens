@@ -19,12 +19,65 @@ const dbPath = getFlag('--db-path',
 const days = parseInt(getFlag('--days', '30'), 10) || 30;
 
 // --- DB ---
-if (!fs.existsSync(dbPath)) {
-  console.error(JSON.stringify({ error: `Database not found: ${dbPath}` }));
-  process.exit(1);
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
 }
 
-const db = new Database(dbPath, { readonly: true, fileMustExist: true });
+const isNew = !fs.existsSync(dbPath);
+const db = new Database(dbPath);
+
+if (isNew) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS skill_runs (
+      id TEXT PRIMARY KEY,
+      skill_name TEXT NOT NULL,
+      input_tokens INTEGER DEFAULT 0,
+      output_tokens INTEGER DEFAULT 0,
+      duration_ms INTEGER DEFAULT 0,
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS reactions (
+      id TEXT PRIMARY KEY,
+      skill_run_id TEXT NOT NULL,
+      reaction TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (skill_run_id) REFERENCES skill_runs(id)
+    );
+    CREATE TABLE IF NOT EXISTS skill_versions (
+      id TEXT PRIMARY KEY,
+      skill_name TEXT NOT NULL,
+      version TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS ab_tests (
+      id TEXT PRIMARY KEY,
+      skill_name TEXT NOT NULL,
+      version_a TEXT NOT NULL,
+      version_b TEXT NOT NULL,
+      status TEXT DEFAULT 'running',
+      target_runs INTEGER DEFAULT 100,
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS ab_runs (
+      id TEXT PRIMARY KEY,
+      ab_test_id TEXT NOT NULL,
+      skill_run_id TEXT NOT NULL,
+      version TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (ab_test_id) REFERENCES ab_tests(id),
+      FOREIGN KEY (skill_run_id) REFERENCES skill_runs(id)
+    );
+    CREATE TABLE IF NOT EXISTS guard_configs (
+      id TEXT PRIMARY KEY,
+      skill_name TEXT NOT NULL,
+      config TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+  `);
+}
+
+db.pragma('journal_mode = WAL');
 
 // --- Queries ---
 
