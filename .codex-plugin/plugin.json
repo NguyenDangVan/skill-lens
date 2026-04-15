@@ -1,0 +1,34 @@
+{
+  "name": "skill-lens",
+  "version": "1.0.0",
+  "description": "Analytics dashboard for skill usage, health metrics, and A/B test results.",
+  "author": {
+    "name": "vannd1"
+  },
+  "license": "ISC",
+  "keywords": [
+    "analytics",
+    "skills",
+    "dashboard",
+    "codex",
+    "claude"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Skill Lens",
+    "shortDescription": "Inspect skill usage, health, and A/B metrics.",
+    "longDescription": "Skill Lens provides terminal skills and a local dashboard for reviewing skill usage, satisfaction, token consumption, and A/B test results across Codex or Claude data sources.",
+    "developerName": "vannd1",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "defaultPrompt": [
+      "Show a 30-day overview for skill usage.",
+      "Review health metrics for one skill.",
+      "Launch the Skill Lens dashboard."
+    ],
+    "brandColor": "#3B82F6"
+  }
+}

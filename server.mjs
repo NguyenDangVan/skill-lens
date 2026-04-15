@@ -4,11 +4,11 @@ import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import Database from 'better-sqlite3';
+import { resolveDbPath } from './lib/config.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '3847', 10);
-const DB_PATH = process.env.DB_PATH
-  || path.join(os.homedir(), '.claude/plugins/skill-lens/data/skill-lens.db');
+const DB_PATH = resolveDbPath(process.env, os.homedir(), fs.existsSync);
 
 const MIME = {
   '.html': 'text/html',

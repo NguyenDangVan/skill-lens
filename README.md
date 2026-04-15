@@ -1,8 +1,49 @@
 # skill-lens
 
-Analytics dashboard plugin for Claude Code. View skill usage statistics, health metrics, satisfaction trends, and A/B test results directly in Claude Code or via an interactive web dashboard.
+Analytics dashboard for skill usage. View usage statistics, health metrics, satisfaction trends, and A/B test results from Codex, Claude Code, or an interactive web dashboard.
 
 ## Installation
+
+### Codex Plugin
+
+This repo now includes a Codex plugin manifest at `.codex-plugin/plugin.json`.
+
+If your Codex setup supports local plugins, install/link this repo as a plugin and set:
+
+```bash
+export SKILL_LENS_ROOT=/path/to/skill-lens
+```
+
+This repo also includes a repo-local marketplace entry at `.agents/plugins/marketplace.json`.
+
+For a home-local install that mirrors the standard Codex marketplace layout, run:
+
+```bash
+bash scripts/install-codex-plugin.sh
+```
+
+If your plugin flow is not set up yet, you can still use the skills directly:
+
+### Codex Skills
+
+Copy the skills into your Codex skill directory and point them at this repo:
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R skills/skill-lens ~/.codex/skills/
+cp -R skills/skill-lens-health ~/.codex/skills/
+cp -R skills/skill-lens-ab ~/.codex/skills/
+cp -R skills/skill-lens-dashboard ~/.codex/skills/
+export SKILL_LENS_ROOT=/path/to/skill-lens
+```
+
+If your analytics DB lives somewhere else, set:
+
+```bash
+export DB_PATH=/path/to/skill-lens.db
+```
+
+### Claude Code Plugin
 
 ```bash
 claude plugin marketplace add /path/to/skill-lens
@@ -31,12 +72,15 @@ claude plugin install skill-lens
 
 ## Configuration
 
-The plugin reads the SQLite database in read-only mode.
+The app reads the SQLite database in read-only mode.
 
 | Env Variable | Default | Description |
 |-------------|---------|-------------|
-| `DB_PATH` | `~/.claude/plugins/skill-lens/data/skill-lens.db` | Path to the SQLite database |
+| `DB_PATH` | `~/.codex/memories/skill-lens/skill-lens.db` | Path to the SQLite database |
 | `PORT` | `3847` | Web dashboard port |
+| `SKILL_LENS_ROOT` | repo path | Path to this repository when running from Codex or outside Claude plugin context |
+
+If `DB_PATH` is not set, the app prefers the Codex default path and falls back to the Claude plugin path when that file exists.
 
 ## Requirements
 
@@ -55,6 +99,7 @@ node seed-test-db.mjs
 node scripts/query-db.mjs overview --db-path ./test.db --days 30
 node scripts/query-db.mjs health --db-path ./test.db --days 14
 node scripts/query-db.mjs ab-tests --db-path ./test.db
+npm test
 ```
 
 ## License

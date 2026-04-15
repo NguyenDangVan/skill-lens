@@ -21,9 +21,14 @@ Show health metrics and satisfaction data for skills.
    - Extract `--days N` if present (default 14)
    - Any remaining text is the skill name for detailed view
 
-2. If **no skill name** provided, run the health overview:
+2. Resolve the repo root:
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/scripts/query-db.mjs" health --days <DAYS> --db-path "${DB_PATH:-$HOME/.claude/plugins/skill-lens/data/skill-lens.db}"
+ROOT="${SKILL_LENS_ROOT:-${CLAUDE_PLUGIN_ROOT:-$PWD}}"
+```
+
+3. If **no skill name** provided, run the health overview:
+```bash
+node "$ROOT/scripts/query-db.mjs" health --days <DAYS> --db-path "${DB_PATH:-$HOME/.codex/memories/skill-lens/skill-lens.db}"
 ```
 
 Format as:
@@ -39,9 +44,9 @@ Thresholds: sat drop >15% = warning, token creep >30% = warning, cancel >10% = c
 
 Use status indicators: `healthy`, `warning`, `critical`.
 
-3. If a **skill name** is provided, also run:
+4. If a **skill name** is provided, also run:
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/scripts/query-db.mjs" health-detail <SKILL_NAME> --db-path "${DB_PATH:-$HOME/.claude/plugins/skill-lens/data/skill-lens.db}"
+node "$ROOT/scripts/query-db.mjs" health-detail <SKILL_NAME> --db-path "${DB_PATH:-$HOME/.codex/memories/skill-lens/skill-lens.db}"
 ```
 
 Add to the output:
@@ -60,4 +65,4 @@ Add to the output:
 ...
 ```
 
-4. Handle errors gracefully (DB not found, skill not found).
+5. Handle errors gracefully (DB not found, skill not found).

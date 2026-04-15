@@ -4,7 +4,7 @@
 `/home/vannd1/workspaces/u30/skill-lens`
 
 ## What This Is
-A Claude Code plugin that provides visual analytics for skill usage. It reads a SQLite database in read-only mode and presents usage, health, and A/B testing data through slash commands and an interactive web dashboard.
+A skill analytics dashboard that works with Codex and Claude Code. It reads a SQLite database in read-only mode and presents usage, health, and A/B testing data through skills/commands and an interactive web dashboard.
 
 ## Design Spec
 Full spec at: `docs/superpowers/specs/2026-04-10-skill-lens-dashboard-design.md`
@@ -13,7 +13,7 @@ Full spec at: `docs/superpowers/specs/2026-04-10-skill-lens-dashboard-design.md`
 
 | Decision | Choice |
 |----------|--------|
-| Deployment | Claude Code plugin + local web dashboard |
+| Deployment | Codex skills, Claude Code plugin, and local web dashboard |
 | Frontend stack | Vanilla JS + HTML + Chart.js 4.x (CDN) |
 | Backend | Node.js built-in `http` + better-sqlite3 (read-only) |
 | DB connection | Reads SQLite directly via `DB_PATH` env var |
@@ -55,7 +55,7 @@ Browser ──GET──▶ Node.js server (server.mjs, port 3847)
                     │
                     ▼ (read-only)
               skill-lens.db (SQLite)
-              default: ~/.claude/plugins/skill-lens/data/skill-lens.db
+              default: ~/.codex/memories/skill-lens/skill-lens.db
 ```
 
 ## API Endpoints
@@ -86,6 +86,10 @@ public/
 
 ## Plugin Structure
 ```
+.agents/plugins/
+└── marketplace.json
+.codex-plugin/
+└── plugin.json
 .claude-plugin/
 └── plugin.json
 skills/
@@ -94,8 +98,20 @@ skills/
 ├── skill-lens-ab/SKILL.md
 └── skill-lens-dashboard/SKILL.md
 scripts/
+├── install-codex-plugin.sh
 └── query-db.mjs           # CLI query runner
 ```
+
+## Codex Setup
+```
+~/.codex/skills/
+├── skill-lens/
+├── skill-lens-health/
+├── skill-lens-ab/
+└── skill-lens-dashboard/
+```
+
+Set `SKILL_LENS_ROOT` to the repo path when invoking these skills from Codex.
 
 ## UI
 - Dark theme (#0f1117 bg)

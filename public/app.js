@@ -40,8 +40,8 @@ async function navigate() {
           <h2>Database Not Found</h2>
           <p>Could not connect to the skill-lens database.</p>
           <p>Make sure the database exists and the DB_PATH is set correctly.</p>
-          <code>DB_PATH=~/.claude/plugins/skill-lens/data/skill-lens.db npm run dev</code>
-          <p style="margin-top:16px;color:var(--text-secondary)">Or set the DB_PATH environment variable to point to your database file.</p>
+          <code>DB_PATH=~/.codex/memories/skill-lens/skill-lens.db npm run dev</code>
+          <p style="margin-top:16px;color:var(--text-secondary)">If you are using Claude Code, set DB_PATH to your Claude plugin database file instead.</p>
         </div>`;
     } else {
       app.innerHTML = `

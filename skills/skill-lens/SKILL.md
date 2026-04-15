@@ -17,16 +17,21 @@ Show a usage overview of skill analytics data.
 
 1. Parse the days argument from `$ARGUMENTS`. If not a number or empty, default to `30`.
 
-2. Run the query script:
+2. Resolve the repo root:
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/scripts/query-db.mjs" overview --days <DAYS> --db-path "${DB_PATH:-$HOME/.claude/plugins/skill-lens/data/skill-lens.db}"
+ROOT="${SKILL_LENS_ROOT:-${CLAUDE_PLUGIN_ROOT:-$PWD}}"
 ```
 
-3. If the script exits with an error (DB not found), tell the user:
+3. Run the query script:
+```bash
+node "$ROOT/scripts/query-db.mjs" overview --days <DAYS> --db-path "${DB_PATH:-$HOME/.codex/memories/skill-lens/skill-lens.db}"
+```
+
+4. If the script exits with an error (DB not found), tell the user:
    - The database file was not found
    - They can set `DB_PATH` environment variable to point to a custom database location
 
-4. Parse the JSON output and format a report like this:
+5. Parse the JSON output and format a report like this:
 
 ```
 ## Skill Lens Analytics — Overview (<N> days)
@@ -53,4 +58,4 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/query-db.mjs" overview --days <DAYS> --db-pa
 > For interactive charts, run /skill-lens-dashboard
 ```
 
-5. Format large numbers with commas (e.g., 1,234,567). Show token counts in human-readable form (e.g., 1.2M if over 1 million).
+6. Format large numbers with commas (e.g., 1,234,567). Show token counts in human-readable form (e.g., 1.2M if over 1 million).

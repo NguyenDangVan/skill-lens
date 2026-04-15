@@ -3,6 +3,7 @@ import Database from 'better-sqlite3';
 import path from 'node:path';
 import os from 'node:os';
 import fs from 'node:fs';
+import { resolveDbPath } from '../lib/config.mjs';
 
 // --- CLI args ---
 const args = process.argv.slice(2);
@@ -14,8 +15,7 @@ function getFlag(name, fallback) {
   return args[idx + 1];
 }
 
-const dbPath = getFlag('--db-path',
-  path.join(os.homedir(), '.claude/plugins/skill-lens/data/skill-lens.db'));
+const dbPath = getFlag('--db-path', resolveDbPath(process.env, os.homedir(), fs.existsSync));
 const days = parseInt(getFlag('--days', '30'), 10) || 30;
 
 // --- DB ---
